@@ -5,6 +5,7 @@ var services = builder.Services;
 var config = builder.Configuration;
 
 services.AddInfrastructure(config.GetConnectionString("DatabaseConnection"));
+services.AddServices();
 
 services.AddControllers();
 services.AddEndpointsApiExplorer();

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Models
+namespace Core.Interfaces.Models
 {
-    internal interface IBaseModel<TKey>
+    public interface IBaseModel
     {
-        public TKey Id { get; set; }
+        public Guid Id { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }
