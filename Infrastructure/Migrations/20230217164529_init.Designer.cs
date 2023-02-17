@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(MeetupDbContext))]
-    [Migration("20230217142431_init")]
+    [Migration("20230217164529_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Core.Models.Event", b =>
+            modelBuilder.Entity("Core.Models.Meetup", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -37,15 +37,17 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("EventManagerId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("SpeakerId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("MeetupManager")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Speaker")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartsAt")
                         .HasColumnType("datetime2");
@@ -59,11 +61,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EventManagerId");
-
-                    b.HasIndex("SpeakerId");
-
-                    b.ToTable("Events");
+                    b.ToTable("Meetups");
                 });
 
             modelBuilder.Entity("Core.Models.User", b =>
@@ -272,25 +270,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Core.Models.Event", b =>
-                {
-                    b.HasOne("Core.Models.User", "EventManager")
-                        .WithMany("EventsAsManager")
-                        .HasForeignKey("EventManagerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Core.Models.User", "Speaker")
-                        .WithMany("EventsAsSpeaker")
-                        .HasForeignKey("SpeakerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("EventManager");
-
-                    b.Navigation("Speaker");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -340,13 +319,6 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Core.Models.User", b =>
-                {
-                    b.Navigation("EventsAsManager");
-
-                    b.Navigation("EventsAsSpeaker");
                 });
 #pragma warning restore 612, 618
         }
