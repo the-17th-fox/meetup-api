@@ -1,12 +1,18 @@
 using Core.Utilities;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Serilog;
 using Web.Extensions;
 using Web.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var config = builder.Configuration;
+
+builder.Host.UseSerilog((context, config) =>
+{
+    config.ReadFrom.Configuration(context.Configuration);
+});
 
 services.AddInfrastructure(config.GetConnectionString("DatabaseConnection"));
 services.AddServices();
