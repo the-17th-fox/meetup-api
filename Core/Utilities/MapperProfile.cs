@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Core.Models;
 using Core.ViewModels.Meetups;
+using Core.ViewModels.Pagination;
 
 namespace Core.Utilities
 {
@@ -17,6 +18,9 @@ namespace Core.Utilities
             CreateMap<UpdateMeetupViewModel, Meetup>();
             CreateMap<Meetup, MeetupViewModel>();
             CreateMap<Meetup, ShortMeetupViewModel>();
+
+            CreateMap<PagedList<Meetup>, PageViewModel<ShortMeetupViewModel>>()
+                .ForMember(i => i.Items, p => p.MapFrom(u => u.ToList()));
         }
     }
 }
