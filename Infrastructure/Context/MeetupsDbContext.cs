@@ -6,11 +6,25 @@ using Core.Interfaces.Models;
 
 namespace Infrastructure.Context
 {
-    public class MeetupDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
+    public class MeetupsDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     {
-        public MeetupDbContext(DbContextOptions<MeetupDbContext> options) : base(options) {}
+        public MeetupsDbContext(DbContextOptions<MeetupsDbContext> options) : base(options) 
+		{
+			Database.EnsureCreated();
+		}
 
         public DbSet<Meetup> Meetups => Set<Meetup>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
+
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<User>()
+                .HasData(SeededAdministrator.GetSeeded());
+        }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
@@ -21,7 +35,7 @@ namespace Infrastructure.Context
             if (!entries.Any())
                 return await base.SaveChangesAsync(cancellationToken);
 
-            var modifed = entries
+            var modified = entries
                 .Where(e => e.State == EntityState.Modified)
                 .Where(e => e.Properties.Where(p => p.Metadata.Name == updatedAt).Any());
 
@@ -32,7 +46,7 @@ namespace Infrastructure.Context
             foreach (var entityEntry in added)
                 entityEntry.Property(createdAt).CurrentValue = DateTime.UtcNow;
 
-            foreach (var entityEntry in modifed)
+            foreach (var entityEntry in modified)
                 entityEntry.Property(updatedAt).CurrentValue = DateTime.UtcNow;
 
             return await base.SaveChangesAsync(cancellationToken);
