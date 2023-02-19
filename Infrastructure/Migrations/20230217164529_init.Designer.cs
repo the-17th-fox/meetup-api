@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infrastructure.Migrations
 {
-    [DbContext(typeof(MeetupDbContext))]
+    [DbContext(typeof(MeetupsDbContext))]
     [Migration("20230217164529_init")]
     partial class init
     {

@@ -16,6 +16,16 @@ namespace Infrastructure.Context
         public DbSet<Meetup> Meetups => Set<Meetup>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
+
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<User>()
+                .HasData(SeededAdministrator.GetSeeded());
+        }
+
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             var updatedAt = nameof(IBaseModel.UpdatedAt);
