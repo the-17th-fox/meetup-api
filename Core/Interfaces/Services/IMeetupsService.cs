@@ -8,14 +8,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Interfaces
+namespace Core.Interfaces.Services
 {
     public interface IMeetupsService
     {
-        public Task CreateAsync(CreateMeetupViewModel meetupModel);
+        public Task CreateAsync(Meetup meetup);
         public Task<Meetup> GetByIdAsync(Guid id);
         public Task<PagedList<Meetup>> GetAllAsync(PageParametersViewModel pageParameters);
-        public Task UpdateAsync(UpdateMeetupViewModel updateMeetupViewModel);
+        public Task UpdateAsync(Meetup updatedMeetup);
         public Task DeleteAsync(Guid id);
     }
 }

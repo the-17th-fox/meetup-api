@@ -1,15 +1,11 @@
-﻿using Core.Interfaces;
+﻿using AutoMapper;
+using Core.Constants.CustomExceptions;
 using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
 using Core.Models;
 using Core.Utilities;
 using Core.ViewModels.Meetups;
 using Core.ViewModels.Pagination;
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Services
 {
@@ -22,18 +18,11 @@ namespace Core.Services
             _meetupsRepository = meetupsRepository ?? throw new ArgumentNullException(nameof(meetupsRepository));
         }
 
-        public async Task CreateAsync(CreateMeetupViewModel meetupModel)
+        public async Task CreateAsync(Meetup meetup)
         {
-
-            Meetup meetup = new()
-            {
-                Title = meetupModel.Title,
-                Description = meetupModel.Description,
-                Location = meetupModel.Location,
-                StartsAt = meetupModel.StartsAt,
-                MeetupManager = meetupModel.MeetupManager,
-                Speaker = meetupModel.Speaker
-            };
+            var existingMeetup = await _meetupsRepository.GetByTimeAsync(meetup.StartsAt);
+            if (existingMeetup != null)
+                throw new BadRequestException("There is already a meetup at the specified time");
 
             await _meetupsRepository.CreateAsync(meetup);
         }
@@ -45,15 +34,15 @@ namespace Core.Services
             await _meetupsRepository.DeleteAsync(meetup);
         }
 
-        public async Task UpdateAsync(UpdateMeetupViewModel updateMeetupViewModel)
+        public async Task UpdateAsync(Meetup updatedMeetup)
         {
-            var meetup = await CheckIfExistsAsync(updateMeetupViewModel.Id);
+            var meetup = await CheckIfExistsAsync(updatedMeetup.Id);
 
-            await _meetupsRepository.UpdateAsync(meetup, updateMeetupViewModel);
+            await _meetupsRepository.UpdateAsync(meetup, updatedMeetup);
         }
 
         private async Task<Meetup> CheckIfExistsAsync(Guid id, bool asNoTracking = false)
-            => await _meetupsRepository.GetByIdAsync(id, asNoTracking) ?? throw new ArgumentNullException("meetup"); // temp exception naming
+            => await _meetupsRepository.GetByIdAsync(id, asNoTracking) ?? throw new NotFoundException("Meetup with the specified id hasn't been found");
 
         public async Task<PagedList<Meetup>> GetAllAsync(PageParametersViewModel pageParameters)
             => await _meetupsRepository.GetAllAsync(pageParameters);

@@ -1,6 +1,9 @@
-﻿using Core.Interfaces;
+﻿using AutoMapper;
+using Core.Interfaces.Services;
+using Core.Models;
 using Core.ViewModels.Meetups;
 using Core.ViewModels.Pagination;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Mvc;
@@ -8,33 +11,41 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 namespace Web.Controllers
 {
+    [Authorize]
     [Route("api/meetups")]
     [ApiController]
     public class MeetupsController : ControllerBase
     {
         private readonly IMeetupsService _meetupsService;
+        private readonly IMapper _mapper;
 
-        public MeetupsController(IMeetupsService meetupsService)
+        public MeetupsController(IMeetupsService meetupsService, IMapper mapper)
         {
-            _meetupsService = meetupsService;
+            _meetupsService = meetupsService ?? throw new ArgumentNullException(nameof(meetupsService)) ;
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
-            return Ok(await _meetupsService.GetByIdAsync(id));
+            var meetup = await _meetupsService.GetByIdAsync(id);
+            var meetupModel = _mapper.Map<MeetupViewModel>(meetup);
+            return Ok(meetupModel);
         }
 
         [HttpGet("all")]
         public async Task<IActionResult> GetAllAsync([FromQuery] PageParametersViewModel pageParameters)
         {
-            return Ok(await _meetupsService.GetAllAsync(pageParameters));
+            var meetups = await _meetupsService.GetAllAsync(pageParameters);
+            var meetupsModels = _mapper.Map<List<ShortMeetupViewModel>>(meetups);
+            return Ok(meetupsModels);
         }
 
         [HttpPost("create")]
         public async Task<IActionResult> CreateAsync(CreateMeetupViewModel newMeetup)
         {
-            await _meetupsService.CreateAsync(newMeetup);
+            var meetup = _mapper.Map<Meetup>(newMeetup);
+            await _meetupsService.CreateAsync(meetup);
             return Ok();
         }
 
@@ -48,7 +59,8 @@ namespace Web.Controllers
         [HttpPatch("update")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateMeetupViewModel updateMeetupViewModel)
         {
-            await _meetupsService.UpdateAsync(updateMeetupViewModel);
+            var updatedMeetup = _mapper.Map<Meetup>(updateMeetupViewModel);
+            await _meetupsService.UpdateAsync(updatedMeetup);
             return Ok();
         }
     }
