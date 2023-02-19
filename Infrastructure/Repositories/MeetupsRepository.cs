@@ -11,9 +11,9 @@ namespace Infrastructure.Repositories
 {
     public class MeetupsRepository : IMeetupsRepository
     {
-        private readonly MeetupDbContext _context;
+        private readonly MeetupsDbContext _context;
 
-        public MeetupsRepository(MeetupDbContext context)
+        public MeetupsRepository(MeetupsDbContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
@@ -36,6 +36,13 @@ namespace Infrastructure.Repositories
             return await PagedList<Meetup>.ToPagedListAsync(meetups, pageParameters.PageNumber, pageParameters.PageSize);
         }
 
+        public async Task<Meetup?> GetByTimeAsync(DateTime time)
+        {
+            return await _context.Meetups
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.StartsAt == time);
+        }
+
         public async Task<Meetup?> GetByIdAsync(Guid id, bool asNoTracking = false)
         {
             return asNoTracking ?
@@ -43,7 +50,7 @@ namespace Infrastructure.Repositories
                 : await _context.Meetups.FindAsync(id);
         }
 
-        public async Task UpdateAsync(Meetup meetup, UpdateMeetupViewModel newMeetup)
+        public async Task UpdateAsync(Meetup meetup, Meetup newMeetup)
         {
             _context.Update(meetup);
             meetup.MeetupManager = newMeetup.MeetupManager;

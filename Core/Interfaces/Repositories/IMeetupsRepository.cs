@@ -15,7 +15,8 @@ namespace Core.Interfaces.Repositories
         public Task CreateAsync(Meetup meetup);
         public Task<Meetup?> GetByIdAsync(Guid id, bool asNoTracking = false);
         public Task<PagedList<Meetup>> GetAllAsync(PageParametersViewModel pageParameters);
-        public Task UpdateAsync(Meetup meetup, UpdateMeetupViewModel newMeetup);
+        public Task<Meetup?> GetByTimeAsync(DateTime time);
+        public Task UpdateAsync(Meetup meetup, Meetup newMeetup);
         public Task DeleteAsync(Meetup meetup);
     }
 }
