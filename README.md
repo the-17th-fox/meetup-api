@@ -1,8 +1,8 @@
 ## Architecture
 The Onion architecture have been chosen according to the requirements of the technical task due to avoiding meaningless overcomplication of the project.
-There was not enougn information about app expanding plans for chosing looser, expandable, but more 'expensive' and complicated solution as CQRS or microservices.
+There was not enougn information about app expanding plans for chosing looser, expandable, but more expensive and complicated solutions as CQRS or microservices.
 
-Decisions about the complexity of certain services were made based on requirements. I think it is better to do only what a 'client' requests, and if it will be not enough - more time could be spent on improvements - it can helps save money and time.
+Decisions about the complexity of certain services were made based on requirements. I think it's better to do only what a 'client' requests, and if it will be not enough - more time could be spent on improvements - it can helps save money and time.
 
 ## Time
 - Estimated time: 5-6 hours
@@ -45,3 +45,6 @@ Use for login:
 
 #### View logs
 Logs could be accessed at ```http://localhost:8081/db/logs```
+
+#### PS.
+Left all branches undeleted - maybe it will be needed in some way.
