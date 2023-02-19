@@ -1,0 +1,54 @@
+version: "3.9"
+services:
+  logs:
+    image: mongo:latest
+    networks:
+      - meetup-net
+
+  mongo-express:
+    image: mongo-express:latest
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: logs
+      ME_CONFIG_MONGODB_URL: mongodb://logs:27017/
+    networks:
+      - meetup-net
+
+  meetup-db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Password1"
+      MSSQL_PID: "Express"
+      MSSQL_TCP_PORT: "9823"
+    networks:
+      - meetup-net
+      
+  meetup-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9999:9999"
+    environment:
+      ConnectionStrings__DatabaseConnection: "Server=meetup-db,9823;database=MeetupDb;User Id=sa;Password=Password1"
+      ASPNETCORE_URLS: http://0.0.0.0:9999/    
+      ASPNETCORE_ENVIRONMENT: "Production"
+      Authentication__Jwt__Key: "dq98PWkmdNWAiMioYIFK3y15PaSMrx1ACHGEzgl2AdREsEzePUQiTndFlUQpbCbF"
+      Authentication__Jwt__Issuer: "meetup-api-iss"
+      Authentication__Jwt__Audience: "meetup-api-aud"
+      Authentication__Jwt__AuthTokenLifetimeInMinutes: 5
+      Authentication__Jwt__RefreshTokenLifetimeInWeeks: 3
+      Serilog__WriteTo__1__Name: "MongoDB"
+      Serilog__WriteTo__1__Args__databaseUrl: "mongodb://logs:27017/logs"
+      Serilog__WriteTo__1__Args__collectionName: "logs"
+    depends_on: 
+      - meetup-db
+    networks:
+      - meetup-net
+      
+networks:
+  meetup-net:
+    driver: bridge
