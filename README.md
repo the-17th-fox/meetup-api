@@ -45,6 +45,3 @@ Use for login:
 
 #### View logs
 Logs could be accessed at ```http://localhost:8081/db/logs```
-
-#### PS.
-Left all branches undeleted - maybe it will be needed in some way.
